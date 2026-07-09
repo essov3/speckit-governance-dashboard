@@ -1,0 +1,37 @@
+{
+  "name": "speckit-governance-dashboard",
+  "version": "1.0.0",
+  "description": "A standalone, read-only, Markdown-first visual dashboard for SpecKit projects.",
+  "main": "dist/cli/index.js",
+  "bin": {
+    "speckit-dashboard": "./dist/cli/index.js"
+  },
+  "type": "module",
+  "scripts": {
+    "build": "tsc && vite build",
+    "test": "vitest run",
+    "dashboard:generate": "tsx src/cli/index.ts generate",
+    "dashboard:check": "tsx src/cli/index.ts check",
+    "dashboard:serve": "tsx src/cli/index.ts serve",
+    "dashboard:dev": "tsx src/cli/index.ts serve",
+    "dashboard:doctor": "tsx src/cli/index.ts doctor"
+  },
+  "dependencies": {
+    "commander": "^11.1.0",
+    "fast-glob": "^3.3.2",
+    "gray-matter": "^4.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@types/react": "^18.2.61",
+    "@types/react-dom": "^18.2.19",
+    "@vitejs/plugin-react": "^4.2.1",
+    "tsx": "^4.7.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.4",
+    "vitest": "^1.3.1"
+  }
+}
