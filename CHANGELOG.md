@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2 - Vitepress Migration
+
+- Migrate public landing site to Vitepress docs
+- Refresh documentation and command references to version 0.1.2
+
 ## 0.1.1 - Landing site refresh
 
 - Expand the public landing page with feature details, quick start, and privacy guidance

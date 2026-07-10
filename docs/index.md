@@ -124,12 +124,12 @@ Install the package to use the dashboard on your own SpecKit project, or clone t
 ### From npm (Recommended)
 
 ```sh
-npx speckit-governance-dashboard@0.1.1 doctor --project-root ../my-speckit-project
-npx speckit-governance-dashboard@0.1.1 generate --project-root ../my-speckit-project --deterministic
-npx speckit-governance-dashboard@0.1.1 serve --project-root ../my-speckit-project
+npx speckit-governance-dashboard@0.1.2 doctor --project-root ../my-speckit-project
+npx speckit-governance-dashboard@0.1.2 generate --project-root ../my-speckit-project --deterministic
+npx speckit-governance-dashboard@0.1.2 serve --project-root ../my-speckit-project
 
 # or install globally
-npm install --global speckit-governance-dashboard@0.1.1
+npm install --global speckit-governance-dashboard@0.1.2
 speckit-dashboard serve --project-root ../my-speckit-project
 ```
 

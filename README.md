@@ -48,15 +48,15 @@ The fastest way to use the dashboard is directly via npm.
 Run it without a global installation:
 
 ```bash
-npx speckit-governance-dashboard@0.1.1 doctor --project-root ../my-speckit-project
-npx speckit-governance-dashboard@0.1.1 generate --project-root ../my-speckit-project --deterministic
-npx speckit-governance-dashboard@0.1.1 serve --project-root ../my-speckit-project
+npx speckit-governance-dashboard@0.1.2 doctor --project-root ../my-speckit-project
+npx speckit-governance-dashboard@0.1.2 generate --project-root ../my-speckit-project --deterministic
+npx speckit-governance-dashboard@0.1.2 serve --project-root ../my-speckit-project
 ```
 
 Or install it globally for everyday use (both the full command and the shorter `speckit-dashboard` alias are available):
 
 ```bash
-npm install --global speckit-governance-dashboard@0.1.1
+npm install --global speckit-governance-dashboard@0.1.2
 speckit-dashboard doctor --project-root ../my-speckit-project
 speckit-governance-dashboard generate --project-root ../my-speckit-project --deterministic
 ```
