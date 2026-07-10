@@ -41,6 +41,32 @@ Supported artifacts include `.specify/feature.json`, constitutions, `spec.md`, `
 
 ## Quick start
 
+The fastest way to use the dashboard is directly via npm.
+
+### From npm (Recommended)
+
+Run it without a global installation:
+
+```bash
+npx speckit-governance-dashboard@0.1.1 doctor --project-root ../my-speckit-project
+npx speckit-governance-dashboard@0.1.1 generate --project-root ../my-speckit-project --deterministic
+npx speckit-governance-dashboard@0.1.1 serve --project-root ../my-speckit-project
+```
+
+Or install it globally for everyday use (both the full command and the shorter `speckit-dashboard` alias are available):
+
+```bash
+npm install --global speckit-governance-dashboard@0.1.1
+speckit-dashboard doctor --project-root ../my-speckit-project
+speckit-governance-dashboard generate --project-root ../my-speckit-project --deterministic
+```
+
+`--project-root` must point to the local SpecKit project you want to inspect. The CLI reads that project without modifying its Markdown artifacts or lifecycle state.
+
+### From a clone (For development/demos)
+
+If you want to run the dashboard with the synthetic demo examples or develop the project, clone the repository:
+
 ```bash
 git clone https://github.com/essov3/speckit-governance-dashboard.git
 cd speckit-governance-dashboard
@@ -58,26 +84,6 @@ npm run dashboard:generate -- --project-root ../my-speckit-project
 ```
 
 The commands above assume a cloned checkout, which includes the synthetic examples. The published npm package intentionally contains only the runtime files, not `examples/`.
-
-## Install and use from npm
-
-After publishing `speckit-governance-dashboard@0.1.1`, run it without a global installation:
-
-```bash
-npx speckit-governance-dashboard@0.1.1 doctor --project-root ../my-speckit-project
-npx speckit-governance-dashboard@0.1.1 generate --project-root ../my-speckit-project --deterministic
-npx speckit-governance-dashboard@0.1.1 serve --project-root ../my-speckit-project
-```
-
-For everyday use, install it globally. Both the full command and the shorter `speckit-dashboard` alias are available:
-
-```bash
-npm install --global speckit-governance-dashboard@0.1.1
-speckit-dashboard doctor --project-root ../my-speckit-project
-speckit-governance-dashboard generate --project-root ../my-speckit-project --deterministic
-```
-
-`--project-root` must point to the local SpecKit project you want to inspect. The CLI reads that project without modifying its Markdown artifacts or lifecycle state.
 
 ## CLI
 
@@ -112,7 +118,7 @@ Optional `speckit-dashboard.config.json` can provide a project root, output loca
 
 ## Website and development
 
-Run `npm run site:dev` for the static landing page and `npm run site:build` to produce `site/dist`. The intended public docs address is [skgd.itseslam.com](https://skgd.itseslam.com). It can be deployed to GitHub Pages, Vercel, Netlify, or Cloudflare Pages without a backend; see [docs deployment](docs/demo.md).
+Run `npm run docs:dev` for the VitePress docs site and `npm run docs:build` to produce `docs/.vitepress/dist`. The intended public docs address is [skgd.itseslam.com](https://skgd.itseslam.com). It can be deployed to GitHub Pages, Vercel, Netlify, or Cloudflare Pages without a backend; see [docs deployment](docs/demo.md).
 
 For development run `npm install`, `npm run typecheck`, `npm test`, and `npm run build`.
 

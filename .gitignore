@@ -7,4 +7,5 @@ coverage/
 .vite/
 .DS_Store
 *.log
-site/dist/
+docs/.vitepress/dist/
+docs/.vitepress/cache/

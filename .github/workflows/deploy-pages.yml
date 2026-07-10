@@ -39,15 +39,15 @@ jobs:
         run: npm run test
 
       - name: Build docs site
-        run: npm run site:build
+        run: npm run docs:build
 
       - name: Disable Jekyll
-        run: touch site/dist/.nojekyll
+        run: touch docs/.vitepress/dist/.nojekyll
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: site/dist
+          path: docs/.vitepress/dist
 
   deploy:
     environment:
