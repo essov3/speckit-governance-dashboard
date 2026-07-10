@@ -2,7 +2,7 @@
 
 > A read-only, Markdown-first visual dashboard for SpecKit projects.
 
-**npm package:** `speckit-governance-dashboard@0.1.0`
+**npm package:** `speckit-governance-dashboard@0.1.1`
 
 **Project demo:** [sgd.itseslam.com](https://sgd.itseslam.com) · **Author:** [Eslam M. Mohamed](https://itseslam.com)
 
@@ -61,18 +61,18 @@ The commands above assume a cloned checkout, which includes the synthetic exampl
 
 ## Install and use from npm
 
-After publishing `speckit-governance-dashboard@0.1.0`, run it without a global installation:
+After publishing `speckit-governance-dashboard@0.1.1`, run it without a global installation:
 
 ```bash
-npx speckit-governance-dashboard@0.1.0 doctor --project-root ../my-speckit-project
-npx speckit-governance-dashboard@0.1.0 generate --project-root ../my-speckit-project --deterministic
-npx speckit-governance-dashboard@0.1.0 serve --project-root ../my-speckit-project
+npx speckit-governance-dashboard@0.1.1 doctor --project-root ../my-speckit-project
+npx speckit-governance-dashboard@0.1.1 generate --project-root ../my-speckit-project --deterministic
+npx speckit-governance-dashboard@0.1.1 serve --project-root ../my-speckit-project
 ```
 
 For everyday use, install it globally. Both the full command and the shorter `speckit-dashboard` alias are available:
 
 ```bash
-npm install --global speckit-governance-dashboard@0.1.0
+npm install --global speckit-governance-dashboard@0.1.1
 speckit-dashboard doctor --project-root ../my-speckit-project
 speckit-governance-dashboard generate --project-root ../my-speckit-project --deterministic
 ```

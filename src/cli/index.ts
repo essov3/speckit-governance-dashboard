@@ -17,7 +17,7 @@ const inferredProjectRoot = npmProjectRoot && npmProjectRoot !== 'true' ? npmPro
 program
   .name('speckit-governance-dashboard')
   .description('A read-only, Markdown-first visual dashboard for SpecKit projects.')
-  .version('0.1.0');
+  .version('0.1.1');
 
 // 1. Generate Command
 program

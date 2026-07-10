@@ -4,13 +4,13 @@ Run `npm run demo:generate` for the clean synthetic demo, point commands at `exa
 
 ## Use the npm package
 
-After `speckit-governance-dashboard@0.1.0` is published, use it against your own local SpecKit project. The npm package intentionally excludes these repository-only examples.
+After `speckit-governance-dashboard@0.1.1` is published, use it against your own local SpecKit project. The npm package intentionally excludes these repository-only examples.
 
 ```bash
-npx speckit-governance-dashboard@0.1.0 doctor --project-root ../my-speckit-project
-npx speckit-governance-dashboard@0.1.0 generate --project-root ../my-speckit-project --deterministic
+npx speckit-governance-dashboard@0.1.1 doctor --project-root ../my-speckit-project
+npx speckit-governance-dashboard@0.1.1 generate --project-root ../my-speckit-project --deterministic
 
-npm install --global speckit-governance-dashboard@0.1.0
+npm install --global speckit-governance-dashboard@0.1.1
 speckit-dashboard serve --project-root ../my-speckit-project
 ```
 

@@ -1,6 +1,6 @@
 {
   "name": "speckit-governance-dashboard",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A read-only, Markdown-first visual dashboard for GitHub Spec Kit repositories.",
   "author": "Eslam M. Mohamed",
   "main": "dist/cli/index.js",
@@ -22,8 +22,8 @@
   },
   "homepage": "https://sgd.itseslam.com",
   "bin": {
-    "speckit-governance-dashboard": "dist/cli/index.js",
-    "speckit-dashboard": "dist/cli/index.js"
+    "speckit-governance-dashboard": "./dist/cli/index.js",
+    "speckit-dashboard": "./dist/cli/index.js"
   },
   "type": "module",
   "scripts": {
