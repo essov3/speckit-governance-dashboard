@@ -20,7 +20,7 @@
   "bugs": {
     "url": "https://github.com/essov3/speckit-governance-dashboard/issues"
   },
-  "homepage": "https://sgd.itseslam.com",
+  "homepage": "https://skgd.itseslam.com",
   "bin": {
     "speckit-governance-dashboard": "./dist/cli/index.js",
     "speckit-dashboard": "./dist/cli/index.js"

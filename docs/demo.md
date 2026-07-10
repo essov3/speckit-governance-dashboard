@@ -26,4 +26,4 @@ npm run demo:screenshots
 
 Screenshots are stored in `docs/assets/screenshots/` and use only fictional data. Never deploy or publish a snapshot from a private target project without review and sanitization.
 
-Build the static landing site with `npm run site:build`. The intended project demo domain is `https://sgd.itseslam.com`; configure that custom domain with the selected host. For GitHub Pages deploy `site/dist`; for Vercel select Vite with build command `npm run site:build` and output `site/dist`; Netlify uses the same commands. No backend services are required.
+Build the static landing site with `npm run site:build`. The intended project docs domain is `https://skgd.itseslam.com`; configure that custom domain with the selected host. For GitHub Pages deploy `site/dist`; for Vercel select Vite with build command `npm run site:build` and output `site/dist`; Netlify uses the same commands. No backend services are required.

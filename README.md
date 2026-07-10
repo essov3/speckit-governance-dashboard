@@ -4,7 +4,7 @@
 
 **npm package:** `speckit-governance-dashboard@0.1.1`
 
-**Project demo:** [sgd.itseslam.com](https://sgd.itseslam.com) · **Author:** [Eslam M. Mohamed](https://itseslam.com)
+**Project docs:** [skgd.itseslam.com](https://skgd.itseslam.com) · **Author:** [Eslam M. Mohamed](https://itseslam.com)
 
 [![CI](https://github.com/essov3/speckit-governance-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/essov3/speckit-governance-dashboard/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -112,7 +112,7 @@ Optional `speckit-dashboard.config.json` can provide a project root, output loca
 
 ## Website and development
 
-Run `npm run site:dev` for the static landing page and `npm run site:build` to produce `site/dist`. The intended public demo address is [sgd.itseslam.com](https://sgd.itseslam.com). It can be deployed to GitHub Pages, Vercel, Netlify, or Cloudflare Pages without a backend; see [demo deployment](docs/demo.md).
+Run `npm run site:dev` for the static landing page and `npm run site:build` to produce `site/dist`. The intended public docs address is [skgd.itseslam.com](https://skgd.itseslam.com). It can be deployed to GitHub Pages, Vercel, Netlify, or Cloudflare Pages without a backend; see [docs deployment](docs/demo.md).
 
 For development run `npm install`, `npm run typecheck`, `npm test`, and `npm run build`.
 
