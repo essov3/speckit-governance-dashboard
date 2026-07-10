@@ -4,23 +4,70 @@ export interface StatusBadgeProps {
   status: string;
 }
 
-export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
+function badgeClassFor(status: string): string {
   const s = status.toUpperCase();
 
-  let badgeClass = 'badge-info';
-  
-  if (s === 'CLOSED' || s === 'VERIFIED' || s === 'PASSED' || s === 'APPROVED' || s === 'COMPLETE' || s === 'RESOLVED' || s === 'ACCEPTED') {
-    badgeClass = 'badge-pass';
-  } else if (s === 'OPEN' || s === 'PENDING' || s === 'WARNING' || s === 'WARN' || s === 'IN_PROGRESS' || s === 'SPECIFIED' || s === 'PLANNED' || s === 'TASKS READY') {
-    badgeClass = 'badge-warn';
-  } else if (s === 'FAIL' || s === 'FAILED' || s === 'BLOCKED' || s === 'REJECTED' || s === 'ERROR') {
-    badgeClass = 'badge-fail';
+  if (
+    s === 'CLOSED' ||
+    s === 'VERIFIED' ||
+    s === 'PASSED' ||
+    s === 'APPROVED' ||
+    s === 'COMPLETE' ||
+    s === 'RESOLVED' ||
+    s === 'ACCEPTED' ||
+    s === 'PASS' ||
+    s === 'DONE' ||
+    s.includes('COMPLETE') ||
+    s.includes('VERIFIED') ||
+    s.includes('PASSED') ||
+    s.includes('APPROVED')
+  ) {
+    return 'badge-pass';
   }
 
-  return (
-    <span className={`badge ${badgeClass}`}>
-      {status}
-    </span>
-  );
-};
+  if (
+    s === 'OPEN' ||
+    s === 'PENDING' ||
+    s === 'WARNING' ||
+    s === 'WARN' ||
+    s === 'IN_PROGRESS' ||
+    s === 'IN PROGRESS' ||
+    s === 'SPECIFIED' ||
+    s === 'PLANNED' ||
+    s === 'TASKS READY' ||
+    s === 'IMPLEMENTED' ||
+    s === 'PARTIAL' ||
+    s.includes('PROGRESS') ||
+    s.includes('DEFERRED') ||
+    s.includes('PLANNED')
+  ) {
+    return 'badge-warn';
+  }
+
+  if (
+    s === 'FAIL' ||
+    s === 'FAILED' ||
+    s === 'BLOCKED' ||
+    s === 'REJECTED' ||
+    s === 'ERROR' ||
+    s === 'INCOMPLETE' ||
+    s === 'MISSING' ||
+    s.includes('FAIL') ||
+    s.includes('ERROR') ||
+    s.includes('MISSING')
+  ) {
+    return 'badge-fail';
+  }
+
+  if (!status || s === 'UNKNOWN' || s === 'N/A' || s === '-' || s === '—') {
+    return 'badge-muted';
+  }
+
+  return 'badge-info';
+}
+
+export const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => (
+  <span className={`badge ${badgeClassFor(status)}`}>{status || '—'}</span>
+);
+
 export default StatusBadge;
