@@ -1,37 +1,87 @@
 {
   "name": "speckit-governance-dashboard",
-  "version": "1.0.0",
-  "description": "A standalone, read-only, Markdown-first visual dashboard for SpecKit projects.",
+  "version": "0.1.0",
+  "description": "A read-only, Markdown-first visual dashboard for GitHub Spec Kit repositories.",
+  "author": "Eslam M. Mohamed",
   "main": "dist/cli/index.js",
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "docs/assets/screenshots",
+    "package.json"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/essov3/speckit-governance-dashboard.git"
+  },
+  "bugs": {
+    "url": "https://github.com/essov3/speckit-governance-dashboard/issues"
+  },
+  "homepage": "https://sgd.itseslam.com",
   "bin": {
-    "speckit-dashboard": "./dist/cli/index.js"
+    "speckit-governance-dashboard": "dist/cli/index.js",
+    "speckit-dashboard": "dist/cli/index.js"
   },
   "type": "module",
   "scripts": {
-    "build": "tsc && vite build",
+    "dev": "vite",
+    "build": "tsup src/cli/index.ts --format esm --target node18 --out-dir dist/cli --clean && vite build",
     "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "npm run typecheck",
     "dashboard:generate": "tsx src/cli/index.ts generate",
     "dashboard:check": "tsx src/cli/index.ts check",
     "dashboard:serve": "tsx src/cli/index.ts serve",
     "dashboard:dev": "tsx src/cli/index.ts serve",
-    "dashboard:doctor": "tsx src/cli/index.ts doctor"
+    "dashboard:doctor": "tsx src/cli/index.ts doctor",
+    "demo:generate": "npm run dashboard:generate -- --project-root ./examples/vanilla-speckit-demo --deterministic --out .dashboard-cache/demo/project-status.json",
+    "demo:serve": "npm run dashboard:serve -- --project-root ./examples/vanilla-speckit-demo",
+    "demo:full:doctor": "npm run dashboard:doctor -- --project-root ./examples/full-governance-demo",
+    "demo:full:generate": "npm run dashboard:generate -- --project-root ./examples/full-governance-demo --deterministic --out .dashboard-cache/full-governance-demo/project-status.json",
+    "demo:full:check": "npm run dashboard:check -- --project-root ./examples/full-governance-demo --deterministic --snapshot .dashboard-cache/full-governance-demo/project-status.json",
+    "demo:full:serve": "npm run dashboard:serve -- --project-root ./examples/full-governance-demo",
+    "screenshots:install": "playwright install chromium",
+    "screenshots:demo": "node --max-old-space-size=512 --import tsx scripts/capture-demo-screenshots.ts",
+    "demo:screenshots": "npm run demo:full:generate && npm run build && npm run screenshots:demo",
+    "site:dev": "vite --config site/vite.config.ts",
+    "site:build": "vite build --config site/vite.config.ts",
+    "site:preview": "vite preview --config site/vite.config.ts"
   },
   "dependencies": {
     "commander": "^11.1.0",
     "fast-glob": "^3.3.2",
     "gray-matter": "^4.0.3",
+    "marked": "^18.0.6",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@types/marked": "^5.0.2",
     "@types/node": "^20.11.24",
     "@types/react": "^18.2.61",
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
+    "playwright": "^1.61.1",
+    "tsup": "^8.3.5",
     "tsx": "^4.7.1",
     "typescript": "^5.3.3",
     "vite": "^5.1.4",
     "vitest": "^1.3.1"
-  }
+  },
+  "keywords": [
+    "speckit",
+    "spec-kit",
+    "dashboard",
+    "governance",
+    "markdown",
+    "cli",
+    "visualization",
+    "read-only",
+    "project-management",
+    "developer-tools"
+  ]
 }

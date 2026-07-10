@@ -1,0 +1,4 @@
+- [x] T301 Define notification event contract in contracts/notification-events.md for FR-301
+- [ ] T302 [P] Capture delivery evidence in evidence/deployment-check.md for FR-302
+- [ ] T303 Resolve decision D3 before release
+- [ ] T304 Complete final acceptance review

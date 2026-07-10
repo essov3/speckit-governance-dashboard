@@ -10,7 +10,6 @@ import { EvidenceAdapter } from '../adapters/evidence-adapter.ts';
 import { GovernanceLedgerAdapter } from '../adapters/governance-ledger-adapter.ts';
 import { CoverageMatrixAdapter } from '../adapters/coverage-matrix-adapter.ts';
 import { DecisionRecordAdapter } from '../adapters/decision-record-adapter.ts';
-import { OArbGovernanceAdapter } from '../adapters/oarb-governance-adapter.ts';
 
 import { normalizeFeatures, Feature } from '../normalize/feature-normalizer.ts';
 import { normalizeTasks, Task } from '../normalize/task-normalizer.ts';
@@ -33,7 +32,7 @@ export interface BuildSnapshotOptions {
   projectRoot: string;
   deterministic?: boolean;
   strict?: boolean;
-  adapterMode?: 'auto' | 'vanilla' | 'oarb';
+  adapterMode?: 'auto' | 'vanilla' | 'governance';
   includeUnknown?: boolean;
   cliCommand?: string;
 }
@@ -55,17 +54,15 @@ export async function buildSnapshot(options: BuildSnapshotOptions): Promise<Proj
   const hasCoverage = artifacts.some(a => a.role === 'coverage-matrix');
   const hasPhaseExit = artifacts.some(a => a.role === 'phase-exit-source');
 
-  let detectedType: 'vanilla-speckit' | 'governance-speckit' | 'oarb-governance' | 'unknown' = 'vanilla-speckit';
+  let detectedType: 'vanilla-speckit' | 'governance-speckit' | 'unknown' = 'vanilla-speckit';
   
-  if (adapterMode === 'oarb') {
-    detectedType = 'oarb-governance';
+  if (adapterMode === 'governance') {
+    detectedType = 'governance-speckit';
   } else if (adapterMode === 'vanilla') {
     detectedType = 'vanilla-speckit';
   } else {
     // Auto detection
-    if (hasLedger && hasCoverage) {
-      detectedType = 'oarb-governance';
-    } else if (hasLedger || hasPhaseExit) {
+    if (hasLedger || hasCoverage || hasPhaseExit) {
       detectedType = 'governance-speckit';
     }
   }
@@ -81,9 +78,6 @@ export async function buildSnapshot(options: BuildSnapshotOptions): Promise<Proj
     new DecisionRecordAdapter()
   ];
 
-  if (detectedType === 'oarb-governance') {
-    adapters.push(new OArbGovernanceAdapter());
-  }
 
   const parsedFragments: ParsedFragment[] = [];
   const initialDiagnostics: Diagnostic[] = [];
@@ -219,24 +213,7 @@ export async function buildSnapshot(options: BuildSnapshotOptions): Promise<Proj
 
   const activityFeed = normalizeActivities(activitiesList, activityPathMap);
 
-  // Determine if ENGINE_COMPLETE declared
-  let engineCompleteDeclared = false;
-  let engineCompleteSourceValue: any = undefined;
-  
-  const ledgerContentFrag = parsedFragments.find(f => f.artifactPath === ledgerPath);
-  if (ledgerContentFrag) {
-    const isDeclared = activitiesList.some(a => a.event === 'Lifecycle State Declared' && a.notes?.includes('ENGINE_COMPLETE'));
-    if (isDeclared) {
-      engineCompleteDeclared = true;
-      engineCompleteSourceValue = {
-        value: true,
-        source: { path: ledgerPath, lineStart: 1 },
-        confidence: 'high',
-        role: 'canonical-state',
-        diagnostics: []
-      };
-    }
-  }
+  const lifecycleStateDeclared = activitiesList.some(a => a.event === 'Lifecycle State Declared');
 
   // 5. Validation Context
   const context: ValidationContext = {
@@ -250,7 +227,7 @@ export async function buildSnapshot(options: BuildSnapshotOptions): Promise<Proj
 
   const valLifecycle = validateLifecycle(features, context);
   const valEvidence = validateEvidence(features, tasks, evidenceHealth, context);
-  const valGates = validateGates(gates, features, engineCompleteDeclared, context);
+  const valGates = validateGates(gates, features, lifecycleStateDeclared, context);
   const valDecisions = validateDecisions(decisions, gates, context);
   const valCoverage = validateCoverage(coverage, contractPaths, context);
   const valContracts = validateContracts(contractsList, tasks, context);
@@ -393,14 +370,14 @@ export async function buildSnapshot(options: BuildSnapshotOptions): Promise<Proj
 
     executive: {
       programLifecycle: ledgerArt ? {
-        value: detectedType === 'oarb-governance' ? 'ACTIVE' : 'NONE',
+        value: 'ACTIVE',
         source: { path: ledgerPath, lineStart: 1 },
         confidence: 'medium',
         role: 'canonical-state',
         diagnostics: []
       } : undefined,
       readinessStates: [],
-      engineCompleteDeclared: engineCompleteSourceValue,
+      engineCompleteDeclared: undefined,
       gateSummary: gates.map(g => ({ gateId: g.gateId, status: g.status })),
       featureSummary: {
         total: totalFeatures,

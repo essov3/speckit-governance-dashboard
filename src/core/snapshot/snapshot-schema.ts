@@ -104,7 +104,7 @@ export const ProjectStatusSnapshotSchema = z.object({
 
   project: z.object({
     name: z.string(),
-    detectedType: z.enum(['vanilla-speckit', 'governance-speckit', 'oarb-governance', 'unknown']),
+    detectedType: z.enum(['vanilla-speckit', 'governance-speckit', 'unknown']),
     activeFeature: ActiveFeatureSchema.optional(),
     constitution: ConstitutionSummarySchema.optional()
   }),

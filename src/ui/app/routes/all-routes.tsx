@@ -122,8 +122,6 @@ export const Overview: React.FC<{
   onNavigate?: (tab: NavId) => void;
 }> = ({ data, onOpenSpec, onNavigate }) => {
   const { executive, project, validation } = data;
-  const isOarB = project.detectedType === 'oarb-governance';
-  const showEngineCompleteWarning = isOarB && !executive.engineCompleteDeclared?.value;
   const constitutionPct =
     project.constitution && project.constitution.checksCount > 0
       ? Math.round((project.constitution.passedChecksCount / project.constitution.checksCount) * 100)
@@ -143,15 +141,6 @@ export const Overview: React.FC<{
         title="Overview"
         description="Read-only snapshot of SpecKit project state derived from Markdown artifacts."
       />
-
-      {showEngineCompleteWarning && (
-        <div className="alert alert-warn">
-          <div className="alert-title">ENGINE_COMPLETE not declared</div>
-          <div className="alert-body">
-            OAR B readiness mode is active, but engine completeness is not declared in the delivery ledger.
-          </div>
-        </div>
-      )}
 
       {validation.status === 'fail' && (
         <div className="alert alert-fail">
@@ -419,7 +408,7 @@ export const Overview: React.FC<{
             </div>
             <div>
               <dt>Project root</dt>
-              <dd>{data.generated.projectRoot}</dd>
+              <dd>Local path hidden for privacy</dd>
             </div>
             {project.constitution && (
               <div>

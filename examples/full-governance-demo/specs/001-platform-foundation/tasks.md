@@ -1,0 +1,4 @@
+- [x] T001 [P] Define health contract in contracts/platform-health-contract.md for FR-001
+- [x] T002 Add validation evidence in evidence/test-report.md for FR-002
+- [x] T003 Record API review in evidence/openapi-check.md
+- [x] T004 Record quality review in evidence/product-doctor.md

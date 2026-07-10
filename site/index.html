@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="A read-only, Markdown-first visual dashboard for GitHub Spec Kit repositories." />
+    <link rel="canonical" href="https://sgd.itseslam.com" />
+    <title>SpecKit Governance Dashboard</title>
+    <style>
+      :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background:#0b1020; color:#e5edf9; }
+      body { margin:0; line-height:1.55; } main { max-width:1040px; margin:auto; padding:32px 24px 80px; }
+      .hero { padding:80px 0 48px; } h1 { font-size:clamp(2.6rem, 7vw, 5rem); line-height:1; margin:0 0 20px; } h2 { margin-top:54px; }
+      .lead { max-width:760px; font-size:1.3rem; color:#b7c5dd; } .pill { display:inline-block; padding:5px 10px; border:1px solid #345; border-radius:999px; color:#9fd3ff; }
+      .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); } .card, pre { background:#121a2e; border:1px solid #243452; border-radius:12px; padding:20px; }
+      .visual { min-height:150px; display:flex; align-items:end; padding:18px; background:linear-gradient(135deg,#1e3a5f,#172554); border:1px solid #345; border-radius:12px; color:#cfe7ff; font-weight:650; }
+      pre { overflow:auto; color:#c7f0d8; } a { color:#7dd3fc; } footer { color:#8da0bd; margin-top:60px; }
+    </style>
+  </head>
+  <body><main>
+    <section class="hero"><span class="pill">Read-only by design</span><h1>SpecKit Governance Dashboard</h1><p class="lead">A Markdown-first visual dashboard for repositories created with or compatible with <a href="https://github.com/github/spec-kit">GitHub Spec Kit</a>. Scan artifacts, generate a deterministic derived snapshot, and understand project health without changing the project.</p><p><a href="https://sgd.itseslam.com">Live demo</a> · <a href="https://github.com/essov3/speckit-governance-dashboard">View on GitHub</a> · <a href="https://itseslam.com">Eslam M. Mohamed</a></p></section>
+    <section class="grid"><article class="card"><h3>Markdown stays authoritative</h3><p>Generated JSON is derived cache only. No lifecycle state is written back.</p></article><article class="card"><h3>External project support</h3><p>Point <code>--project-root</code> at any local SpecKit project.</p></article><article class="card"><h3>Adapter-based</h3><p>Use vanilla artifacts or add optional governance conventions.</p></article></section>
+    <section><h2>How it works</h2><pre>CLI → discovery → adapters → normalization → validators → snapshot → UI</pre><p>There is no database, backend service, or mutable state store.</p></section>
+    <section><h2>Visual overview</h2><p>The public demo uses only fictional Markdown artifacts. Generate the complete screenshot set locally with <code>npm run demo:screenshots</code>.</p><div class="grid"><div class="visual">Executive overview<br />Synthetic project health</div><div class="visual">Feature tracker<br />Evidence and progress</div><div class="visual">Governance board<br />Gates and decisions</div></div></section>
+    <section><h2>Quick start</h2><pre>npm install
+npm run build
+npm run dashboard:generate -- --project-root ./examples/vanilla-speckit-demo --deterministic
+npm run dashboard:serve -- --project-root ./examples/vanilla-speckit-demo</pre></section>
+    <section><h2>Install from npm</h2><p>After the initial package release, run the dashboard directly against your own local SpecKit project. Repository examples are intentionally not included in the npm package.</p><pre>npx speckit-governance-dashboard@0.1.0 doctor --project-root ../my-speckit-project
+npx speckit-governance-dashboard@0.1.0 generate --project-root ../my-speckit-project --deterministic
+
+npm install --global speckit-governance-dashboard@0.1.0
+speckit-dashboard serve --project-root ../my-speckit-project</pre><p>The dashboard reads the project specified by <code>--project-root</code> and never changes its Markdown or lifecycle state.</p></section>
+    <section><h2>Run the full demo</h2><pre>npm run demo:full:generate
+npm run demo:full:check
+npm run demo:screenshots</pre><p>The full demo covers contracts, phase exits, coverage, decisions, evidence health, blockers, activity, and artifact inventory.</p></section>
+    <section><h2>Privacy and security</h2><p>Snapshots can contain paths, feature names, and diagnostics. Do not publish a snapshot from a private repository without reviewing and sanitizing it.</p></section>
+    <footer>MIT licensed · Independent companion dashboard for SpecKit-style repositories · A project by <a href="https://itseslam.com">Eslam M. Mohamed</a>.</footer>
+  </main></body>
+</html>

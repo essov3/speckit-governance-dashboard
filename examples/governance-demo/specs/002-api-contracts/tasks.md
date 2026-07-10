@@ -1,0 +1,1 @@
+- [ ] T020 Define endpoint shapes.

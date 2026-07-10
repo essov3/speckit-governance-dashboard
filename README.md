@@ -1,122 +1,136 @@
 # SpecKit Governance Dashboard
 
-A standalone, read-only, Markdown-first visual dashboard for SpecKit projects.
+> A read-only, Markdown-first visual dashboard for SpecKit projects.
 
----
+**npm package:** `speckit-governance-dashboard@0.1.0`
 
-> [!IMPORTANT]
-> **What This Dashboard IS:**
-> - A reader, parser, validator, and visualizer only.
-> - A tool to surface development and governance states (specifications, tasks, gates, decision records, contracts, evidence) directly from Markdown artifacts.
-> - Fully deterministic, reproducible, and source-linked.
->
-> **What This Dashboard IS NOT:**
-> - **Not a second source of truth:** Committed Markdown and governance artifacts remain the only source of truth.
-> - **Not a status writer:** It will never mutate the target SpecKit project, mark features Verified, close gates, or declare readiness.
-> - **Not a database:** It contains no mutable backend state store or runtime telemetry.
+**Project demo:** [sgd.itseslam.com](https://sgd.itseslam.com) · **Author:** [Eslam M. Mohamed](https://itseslam.com)
 
----
+[![CI](https://github.com/essov3/speckit-governance-dashboard/actions/workflows/ci.yml/badge.svg)](https://github.com/essov3/speckit-governance-dashboard/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+## Demo screenshots
+
+The images below are generated exclusively from the synthetic full-governance demo. They are safe to publish and illustrate the dashboard’s read-only views.
+
+![Executive Overview](docs/assets/screenshots/overview.png)
+![Feature Tracker](docs/assets/screenshots/feature-tracker.png)
+![Phase Gate Board](docs/assets/screenshots/gate-board.png)
+
+SpecKit Governance Dashboard scans SpecKit Markdown artifacts, contracts, tasks, checklists, evidence, and optional governance ledgers from an external project path, then generates a deterministic read-only snapshot and visual UI.
+
+It is designed for repositories created with or compatible with [GitHub Spec Kit](https://github.com/github/spec-kit). This dashboard is an independent companion project and is not an official GitHub or Spec Kit project.
+
+**Markdown remains the source of truth. Generated JSON is derived cache only. The dashboard never writes lifecycle state. The dashboard does not modify the target SpecKit project.**
+
+This project is an independent companion dashboard for SpecKit-style repositories. It is not an official GitHub project.
+
+## What it is—and is not
+
+It is a local artifact discovery, validation, snapshot, and visualization tool. It is not a project-management backend, database, workflow engine, Markdown editor, or lifecycle mutation tool.
 
 ## Features
 
-- **External Project Path Resolution:** Run this tool against any SpecKit repository path.
-- **Safe Output Location Mode:** By default, cache files are written *outside* the target project to prevent pollution.
-- **Adapter-Based Architecture:** Easily extensible for project-specific governance models. Comes out of the box with vanilla SpecKit and OAR B readiness governance adapters.
-- **Staleness Protection:** Compares file hashes on disk with cache outputs to verify synchronization.
-- **Read-Only Protection Check:** Active validation of source file integrity during CLI commands to guarantee no mutations occur.
+- Read-only external-project scanning with pre/post mutation protection
+- Vanilla SpecKit artifact discovery plus optional governance artifacts
+- Deterministic JSON snapshots for repeatable CI checks
+- Visual UI for overview, features, gates, evidence, decisions, coverage, diagnostics, and artifact inventory
+- Contract, checklist, evidence, phase-exit, ledger, and decision detection
+- Adapter-based parsing architecture with no default customer-specific rules
 
----
+Supported artifacts include `.specify/feature.json`, constitutions, `spec.md`, `plan.md`, `tasks.md`, checklists, contracts, evidence, phase exits, decision records, delivery ledgers, and coverage matrices.
 
-## Getting Started
-
-### Installation
-
-Clone the repository and install dependencies:
+## Quick start
 
 ```bash
+git clone https://github.com/essov3/speckit-governance-dashboard.git
+cd speckit-governance-dashboard
 npm install
+npm run build
+npm run dashboard:doctor -- --project-root ./examples/vanilla-speckit-demo
+npm run dashboard:generate -- --project-root ./examples/vanilla-speckit-demo --deterministic
+npm run dashboard:serve -- --project-root ./examples/vanilla-speckit-demo
 ```
 
-### Commands
+`--project-root` is the SpecKit project being analyzed, not the dashboard repository. For another local project:
 
-Generate a project status snapshot:
 ```bash
-npm run dashboard:generate -- --project-root /path/to/spec-kit-project
+npm run dashboard:generate -- --project-root ../my-speckit-project
 ```
 
-Validate readiness gates and check if snapshots are stale:
+The commands above assume a cloned checkout, which includes the synthetic examples. The published npm package intentionally contains only the runtime files, not `examples/`.
+
+## Install and use from npm
+
+After publishing `speckit-governance-dashboard@0.1.0`, run it without a global installation:
+
 ```bash
-npm run dashboard:check -- --project-root /path/to/spec-kit-project
+npx speckit-governance-dashboard@0.1.0 doctor --project-root ../my-speckit-project
+npx speckit-governance-dashboard@0.1.0 generate --project-root ../my-speckit-project --deterministic
+npx speckit-governance-dashboard@0.1.0 serve --project-root ../my-speckit-project
 ```
 
-Start the local server and open the web dashboard:
+For everyday use, install it globally. Both the full command and the shorter `speckit-dashboard` alias are available:
+
 ```bash
-npm run dashboard:serve -- --project-root /path/to/spec-kit-project
+npm install --global speckit-governance-dashboard@0.1.0
+speckit-dashboard doctor --project-root ../my-speckit-project
+speckit-governance-dashboard generate --project-root ../my-speckit-project --deterministic
 ```
 
-Diagnose SpecKit folder structure and files:
+`--project-root` must point to the local SpecKit project you want to inspect. The CLI reads that project without modifying its Markdown artifacts or lifecycle state.
+
+## CLI
+
 ```bash
-npm run dashboard:doctor -- --project-root /path/to/spec-kit-project
+npm run dashboard:doctor -- --project-root <project>
+npm run dashboard:generate -- --project-root <project> --deterministic
+npm run dashboard:check -- --project-root <project> --deterministic
+npm run dashboard:serve -- --project-root <project>
 ```
 
----
+`generate` writes `.dashboard-cache/<project>/project-status.json` in the dashboard working directory unless `--out` is supplied. `check` validates the live Markdown view and detects stale cache. Use `--adapter vanilla` or `--adapter governance` to select discovery behavior.
 
-## Configuration
+## Demos
 
-You can place a `speckit-dashboard.config.json` in the dashboard repository root:
+`examples/vanilla-speckit-demo` is a clean synthetic project used by CI. `examples/governance-demo` demonstrates gates, a pending decision, a contract, and an intentional missing-evidence warning. Generate the clean demo with `npm run demo:generate`.
 
-```json
-{
-  "projectRoot": "../oar-b",
-  "adapter": "auto",
-  "output": ".dashboard-cache/oar-b/project-status.json",
-  "strict": false
-}
+## Snapshot, privacy, and read-only behavior
+
+Snapshots contain artifact paths, hashes, feature names, diagnostics, and may contain source excerpts supplied by parsers. **Do not publish snapshots generated from private repositories unless you have reviewed and sanitized them.** No private snapshot is bundled here.
+
+Generated JSON is derived cache only; it is never used to change Markdown or lifecycle state. See [the read-only model](docs/read-only-model.md) and [snapshot schema](docs/snapshot-schema.md).
+
+## Architecture and UI
+
+The pipeline is `CLI → discovery → adapters → normalization → validators → snapshot → UI`. There is no database or backend state store. The UI has executive overview, feature tracking, gate board, coverage, decisions, evidence health, risks, artifacts, and source-excerpt views.
+
+Validation distinguishes errors from warnings; strict mode makes ambiguous parsing fail. Read [architecture](docs/architecture.md), [validation rules](docs/validation-rules.md), and [adapter guidance](docs/adapters.md).
+
+## Configuration and adapters
+
+Optional `speckit-dashboard.config.json` can provide a project root, output location, and adapter choice. It cannot contain lifecycle or governance state. The default vanilla adapter works with common SpecKit Markdown. Governance support adds generic ledger, coverage, decision, contract, evidence, and phase-exit parsing. See [adapters](docs/adapters.md).
+
+## Website and development
+
+Run `npm run site:dev` for the static landing page and `npm run site:build` to produce `site/dist`. The intended public demo address is [sgd.itseslam.com](https://sgd.itseslam.com). It can be deployed to GitHub Pages, Vercel, Netlify, or Cloudflare Pages without a backend; see [demo deployment](docs/demo.md).
+
+For development run `npm install`, `npm run typecheck`, `npm test`, and `npm run build`.
+
+## Generate screenshots locally
+
+```bash
+npm run screenshots:install
+npm run demo:screenshots
 ```
 
-> [!CAUTION]
-> **Forbidden Configuration Fields:**
-> The configuration must **never** contain readiness/lifecycle override state, such as:
-> ```json
-> {
->   "P0": "CLOSED",
->   "feature090": "VERIFIED"
-> }
-> ```
-> If any state-looking fields are detected in the configuration, the CLI will throw an error:
-> `Config must not contain lifecycle/readiness state. Markdown remains the source of truth.`
+Screenshots are saved under `docs/assets/screenshots/`. The full synthetic demo is intentionally rich enough to make feature, gate, coverage, decision, evidence, risk, activity, and artifact views useful.
 
----
+## Security, roadmap, and contributing
 
-## OAR B Governance Mode
+The dashboard reads local files only. Keep private data and secrets out of fixtures, issues, screenshots, and generated snapshots. See [SECURITY.md](SECURITY.md).
 
-When OAR B readiness files are detected (e.g. `delivery-ledger.md` and `product-coverage-matrix.md`), the OAR B adapter activates automatically. It enforces strict guardrails:
-- **P0** is CLOSED unless Markdown evidence proves otherwise.
-- **P1** is OPEN unless Markdown evidence proves otherwise.
-- **ENGINE_COMPLETE** is not declared unless explicitly written in the delivery ledger.
-- Verified P1 children must include **087, 088, and 089**.
-- Feature **090** is never marked Verified unless its phase-exit and ledger both prove it.
-- **P1 Blockers** include `client-notification-plumbing`, `entitlement-concurrency-and-quota`, `support-tickets-decision`, and D1-D4 decision status.
+The roadmap includes richer adapter documentation, sanitized demo screenshots, and configurable snapshot redaction. Contributions are welcome under the [contribution guide](CONTRIBUTING.md) and [code of conduct](CODE_OF_CONDUCT.md).
 
-If the parsed state contradicts any of these guardrails, warnings or errors are raised.
+## License
 
----
-
-## Supported Artifacts
-
-- **Vanilla SpecKit:**
-  - `.specify/memory/constitution.md`
-  - `.specify/feature.json`
-  - `specs/*/spec.md`
-  - `specs/*/plan.md`
-  - `specs/*/tasks.md`
-  - `specs/*/checklists/*.md`
-- **Contracts & Evidence:**
-  - `specs/*/contracts/**`
-  - `specs/*/openapi/**`
-  - `specs/*/evidence/**`
-  - `specs/*/reports/**`
-- **OAR B Governance:**
-  - `specs/069-production-readiness-program/delivery-ledger.md`
-  - `specs/069-production-readiness-program/product-coverage-matrix.md`
-  - `specs/**/decisions/*.md`
+MIT © 2026 Eslam M. Mohamed. See [LICENSE](LICENSE).

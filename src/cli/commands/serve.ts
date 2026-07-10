@@ -70,12 +70,12 @@ export async function runServe(options: ServeCommandOptions): Promise<void> {
   const port = parseInt(options.port || '5173', 10);
   const host = options.host || 'localhost';
 
-  // Determine dist/ui path
+  // Resolve UI assets for both the bundled CLI (`dist/cli/index.js`) and TSX development mode.
   const __dirname = path.dirname(fileURLToPath(import.meta.url));
-  // In dev, the compiled UI is built to dist/ui, or if running directly, we can read from src/ui or build folder
-  // Let's resolve the dashboard repo root
-  const dashboardRoot = path.resolve(__dirname, '../../../'); // from dist/cli/commands/
-  const uiAssetsPath = path.resolve(dashboardRoot, 'dist/ui');
+  const bundledUiAssetsPath = path.resolve(__dirname, '../ui');
+  const uiAssetsPath = fs.existsSync(bundledUiAssetsPath)
+    ? bundledUiAssetsPath
+    : path.resolve(process.cwd(), 'dist/ui');
 
   const mimeTypes: Record<string, string> = {
     '.html': 'text/html',
@@ -90,14 +90,69 @@ export async function runServe(options: ServeCommandOptions): Promise<void> {
     '.ico': 'image/x-icon'
   };
 
+  const ALLOWED_SOURCE_EXTS = new Set(['.md', '.markdown', '.txt', '.yaml', '.yml', '.json', '.feature']);
+
+  /**
+   * Safely resolve a relative project path for read-only source viewing.
+   * Blocks path traversal and files outside the SpecKit project root.
+   */
+  function resolveSafeSourcePath(relativePath: string): { ok: true; absolutePath: string; relativePath: string } | { ok: false; status: number; message: string } {
+    if (!relativePath || typeof relativePath !== 'string') {
+      return { ok: false, status: 400, message: 'Missing path parameter' };
+    }
+
+    // Normalize and strip leading slashes / drive tricks
+    const cleaned = relativePath.replace(/\\/g, '/').replace(/^\/+/, '').replace(/\0/g, '');
+    if (cleaned.includes('..') || path.isAbsolute(cleaned) || /^[a-zA-Z]:/.test(cleaned)) {
+      return { ok: false, status: 400, message: 'Invalid path' };
+    }
+
+    const absolutePath = path.resolve(projectRoot, cleaned);
+    const rootResolved = path.resolve(projectRoot);
+
+    // Ensure the file stays inside project root
+    const relToRoot = path.relative(rootResolved, absolutePath);
+    if (relToRoot.startsWith('..') || path.isAbsolute(relToRoot)) {
+      return { ok: false, status: 403, message: 'Path outside project root' };
+    }
+
+    const ext = path.extname(absolutePath).toLowerCase();
+    if (!ALLOWED_SOURCE_EXTS.has(ext)) {
+      return { ok: false, status: 403, message: `File type not allowed: ${ext || '(none)'}` };
+    }
+
+    if (!fs.existsSync(absolutePath) || !fs.statSync(absolutePath).isFile()) {
+      return { ok: false, status: 404, message: 'File not found' };
+    }
+
+    // Size guard (2 MB)
+    const size = fs.statSync(absolutePath).size;
+    if (size > 2 * 1024 * 1024) {
+      return { ok: false, status: 413, message: 'File too large to preview' };
+    }
+
+    return { ok: true, absolutePath, relativePath: cleaned };
+  }
+
   const server = http.createServer((req, res) => {
-    let reqPath = req.url || '/';
+    const rawUrl = req.url || '/';
+    const url = new URL(rawUrl, `http://${host}:${port}`);
+    let reqPath = url.pathname;
+
+    // CORS-friendly JSON helpers
+    const sendJson = (status: number, body: unknown) => {
+      res.writeHead(status, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'no-store'
+      });
+      res.end(JSON.stringify(body));
+    };
 
     // Route for snapshot JSON
     if (reqPath === '/project-status.json' || reqPath === '/api/snapshot') {
       try {
         const snapshotData = fs.readFileSync(writeResult.outputPath, 'utf8');
-        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
         res.end(snapshotData);
         return;
       } catch (err) {
@@ -105,6 +160,51 @@ export async function runServe(options: ServeCommandOptions): Promise<void> {
         res.end(`Error loading snapshot: ${err instanceof Error ? err.message : String(err)}`);
         return;
       }
+    }
+
+    // Read-only source file content (for SpecKit markdown viewer)
+    if (reqPath === '/api/file') {
+      const fileParam = url.searchParams.get('path') || '';
+      const resolved = resolveSafeSourcePath(fileParam);
+      if (!resolved.ok) {
+        sendJson(resolved.status, { error: resolved.message });
+        return;
+      }
+      try {
+        const content = fs.readFileSync(resolved.absolutePath, 'utf8');
+        sendJson(200, {
+          path: resolved.relativePath,
+          content,
+          sizeBytes: Buffer.byteLength(content, 'utf8'),
+          extension: path.extname(resolved.absolutePath).toLowerCase()
+        });
+      } catch (err) {
+        sendJson(500, { error: err instanceof Error ? err.message : String(err) });
+      }
+      return;
+    }
+
+    // List discoverable source files from the snapshot (markdown-first)
+    if (reqPath === '/api/files') {
+      try {
+        const snapshotData = JSON.parse(fs.readFileSync(writeResult.outputPath, 'utf8'));
+        const artifacts = Array.isArray(snapshotData.artifacts) ? snapshotData.artifacts : [];
+        const files = artifacts
+          .filter((a: { path?: string }) => {
+            const p = (a.path || '').toLowerCase();
+            return p.endsWith('.md') || p.endsWith('.markdown') || p.endsWith('.yaml') || p.endsWith('.yml') || p.endsWith('.txt');
+          })
+          .map((a: { path: string; role: string; featureNumber?: number; sizeBytes?: number }) => ({
+            path: a.path,
+            role: a.role,
+            featureNumber: a.featureNumber,
+            sizeBytes: a.sizeBytes
+          }));
+        sendJson(200, { files, projectRoot: snapshot.generated.projectRoot });
+      } catch (err) {
+        sendJson(500, { error: err instanceof Error ? err.message : String(err) });
+      }
+      return;
     }
 
     // Default to index.html for SPA routing fallback

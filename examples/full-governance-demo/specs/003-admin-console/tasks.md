@@ -1,0 +1,3 @@
+- [x] T201 Define admin routes in contracts/admin-routes.md for FR-201
+- [x] T202 Record UI checks in evidence/ui-test-report.md
+- [ ] T203 Complete phase-exit preparation and approval review

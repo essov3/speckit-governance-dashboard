@@ -1,0 +1,10 @@
+openapi: 3.0.3
+info:
+  title: Synthetic Public API
+  version: 1.0.0
+paths:
+  /status:
+    get:
+      responses:
+        '200':
+          description: Synthetic status response

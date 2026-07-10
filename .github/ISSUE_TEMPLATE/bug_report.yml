@@ -1,0 +1,10 @@
+name: Bug report
+description: Report reproducible dashboard behavior
+body:
+  - type: textarea
+    attributes:
+      label: What happened?
+  - type: textarea
+    attributes:
+      label: Reproduction
+      description: Use synthetic content only. Do not paste private snapshots or secrets.

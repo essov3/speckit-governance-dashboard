@@ -172,7 +172,7 @@ export class GovernanceLedgerAdapter implements Adapter {
       }
 
       // Check for program lifecycle status declaration
-      // E.g., "Program Lifecycle: COMPLETE" or "Readiness Status: ENGINE_COMPLETE"
+      // E.g., "Program Lifecycle: COMPLETE" or "Readiness Status: COMPLETE"
       const statusMatch = sec.content.match(/(?:Program\s+Lifecycle|Readiness\s+Status|Lifecycle\s+State)\s*:\s*([^\n\r]+)/i);
       if (statusMatch) {
         const val = statusMatch[1].trim();

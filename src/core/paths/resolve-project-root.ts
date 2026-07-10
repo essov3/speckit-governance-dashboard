@@ -4,7 +4,7 @@ import { toAbsolutePath } from './normalize-path.ts';
 
 export interface DashboardConfig {
   projectRoot?: string;
-  adapter?: 'auto' | 'vanilla' | 'oarb';
+  adapter?: 'auto' | 'vanilla' | 'governance';
   output?: string;
   strict?: boolean;
   includeUnknown?: boolean;

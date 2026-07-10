@@ -1,0 +1,7 @@
+name: Parser or adapter request
+description: Request support for a generic artifact convention
+body:
+  - type: textarea
+    attributes:
+      label: Artifact shape
+      description: Provide a synthetic example only.

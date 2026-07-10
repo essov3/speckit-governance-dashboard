@@ -3,57 +3,45 @@ import React from 'react';
 export interface SourceLinkProps {
   path: string;
   line?: number;
-  projectRoot?: string;
+  /** When set, clicking opens the in-app Specs viewer */
+  onOpen?: (path: string) => void;
 }
 
-export const SourceLink: React.FC<SourceLinkProps> = ({ path, line, projectRoot }) => {
-  if (!path) return <span style={{ color: 'var(--text-muted)' }}>-</span>;
+export const SourceLink: React.FC<SourceLinkProps> = ({ path, line, onOpen }) => {
+  if (!path) return <span style={{ color: 'var(--text-muted)' }}>—</span>;
 
-  const basename = path.split('/').pop() || path;
-  
-  // Format standard clickable file URL if absolute, or relative to root
-  let fileUrl = '';
-  if (projectRoot) {
-    fileUrl = `file://${projectRoot}/${path}`;
-  } else {
-    fileUrl = `file:///${path}`;
-  }
-  if (line) {
-    fileUrl += `#L${line}`;
-  }
+  const basename = path.split(/[/\\]/).pop() || path;
+  const label = `${basename}${line ? `:${line}` : ''}`;
 
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(path + (line ? `:${line}` : ''));
+    void navigator.clipboard.writeText(path + (line ? `:${line}` : ''));
+  };
+
+  const handleOpen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onOpen) {
+      onOpen(path);
+      return;
+    }
   };
 
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-      <a 
-        href={fileUrl}
-        className="source-link" 
-        title={`Open file: ${path}`}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {basename}{line ? `:${line}` : ''}
-      </a>
-      <button 
-        onClick={handleCopy}
-        style={{
-          background: 'none',
-          border: 'none',
-          color: 'var(--text-muted)',
-          cursor: 'pointer',
-          fontSize: '10px',
-          padding: '2px 4px',
-          borderRadius: '4px'
-        }}
-        title="Copy path to clipboard"
-      >
-        📋
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+      {onOpen ? (
+        <button type="button" className="source-link" title={`View ${path}`} onClick={handleOpen}>
+          {label}
+        </button>
+      ) : (
+        <span className="source-link" title={path} style={{ cursor: 'default', textDecoration: 'none' }}>
+          {label}
+        </span>
+      )}
+      <button type="button" className="icon-btn" onClick={handleCopy} title="Copy path">
+        ⧉
       </button>
     </span>
   );
 };
+
 export default SourceLink;

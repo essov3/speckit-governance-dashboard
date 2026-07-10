@@ -7,7 +7,7 @@ export interface ValidationResult {
 }
 
 export interface ValidationContext {
-  projectType: 'vanilla-speckit' | 'governance-speckit' | 'oarb-governance' | 'unknown';
+  projectType: 'vanilla-speckit' | 'governance-speckit' | 'unknown';
   strict: boolean;
   projectRoot: string;
 }

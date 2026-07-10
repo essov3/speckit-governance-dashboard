@@ -55,9 +55,9 @@ export function validateLifecycle(
       );
     }
 
-    // A feature is Implemented but has no phase-exit.md when phase-exit is required (in governance/OAR B mode)
+    // A feature is Implemented but has no phase-exit.md when phase-exit is required in governance mode.
     if (f.lifecycle === 'Implemented' && !f.phaseExitExists && 
-        (context.projectType === 'oarb-governance' || context.projectType === 'governance-speckit')) {
+        context.projectType === 'governance-speckit') {
       errors.push(
         createDiagnostic({
           id: 'ERR_IMPLEMENTED_WITHOUT_PHASE_EXIT',

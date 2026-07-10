@@ -57,18 +57,18 @@ export function validateGates(
     }
   }
 
-  // OAR B specific: ENGINE_COMPLETE declared while P1 blockers remain
-  if (context.projectType === 'oarb-governance' && isEngineCompleteDeclared) {
+  // A declared lifecycle completion cannot coexist with open blockers in the first gate.
+  if (context.projectType === 'governance-speckit' && isEngineCompleteDeclared) {
     const p1Gate = gates.find(g => g.gateId === 'P1');
     const p1Blockers = p1Gate ? p1Gate.openBlockers : [];
     
     if (p1Blockers && p1Blockers.length > 0) {
       errors.push(
         createDiagnostic({
-          id: 'ERR_ENGINE_COMPLETE_WITH_P1_BLOCKERS',
+          id: 'ERR_LIFECYCLE_COMPLETE_WITH_OPEN_BLOCKERS',
           severity: 'error',
           category: 'gate',
-          message: `ENGINE_COMPLETE is declared, but P1 blockers remain: ${p1Blockers.join('; ')}`,
+          message: `A lifecycle completion is declared, but P1 blockers remain: ${p1Blockers.join('; ')}`,
           source: p1Gate ? p1Gate.source : { path: '' }
         })
       );

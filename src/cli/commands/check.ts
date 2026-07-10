@@ -13,7 +13,7 @@ export interface CheckCommandOptions {
   snapshot?: string;
   strict?: boolean;
   deterministic?: boolean;
-  adapter?: 'vanilla' | 'auto' | 'oarb';
+  adapter?: 'vanilla' | 'auto' | 'governance';
   failOnWarning?: boolean;
 }
 

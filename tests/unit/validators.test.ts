@@ -14,7 +14,7 @@ import { ValidationContext } from '../../src/core/validate/validator-types.ts';
 
 describe('Governance Validators', () => {
   const defaultCtx: ValidationContext = {
-    projectType: 'oarb-governance',
+    projectType: 'governance-speckit',
     strict: false,
     projectRoot: '/mock'
   };

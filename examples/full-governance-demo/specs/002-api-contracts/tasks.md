@@ -1,0 +1,4 @@
+- [x] T101 [P] Define OpenAPI contract in contracts/public-api.openapi.yaml for FR-101
+- [x] T102 Define webhook contract in contracts/webhook-events.md for FR-102
+- [x] T103 Record contract validation in evidence/contract-test-report.md
+- [x] T104 Record CI summary in evidence/ci-summary.md

@@ -28,24 +28,6 @@ export function validateCoverage(
       );
     }
 
-    // OAR B specific: FR-018 coverage evidence check
-    const isFR018 = row.frReferences.includes('FR-018') || 
-                    row.frReferences.includes('FR018') || 
-                    row.capability.toLowerCase().includes('fr-018');
-
-    if (isFR018 && context.projectType === 'oarb-governance') {
-      if (isComplete && !row.hasFR018Evidence) {
-        errors.push(
-          createDiagnostic({
-            id: 'ERR_OARB_FR018_WITHOUT_EVIDENCE',
-            severity: 'error',
-            category: 'coverage',
-            message: `OAR B Rule: Capability "${row.capability}" (FR-018) is marked complete but is missing required FR-018 coverage evidence.`,
-            source: row.source
-          })
-        );
-      }
-    }
   }
 
   // Warning: OpenAPI file exists but no coverage row references it

@@ -8,7 +8,7 @@ export interface GenerateCommandOptions {
   projectRoot?: string;
   out?: string;
   deterministic?: boolean;
-  adapter?: 'vanilla' | 'auto' | 'oarb';
+  adapter?: 'vanilla' | 'auto' | 'governance';
   includeUnknown?: boolean;
   pretty?: boolean;
   quiet?: boolean;

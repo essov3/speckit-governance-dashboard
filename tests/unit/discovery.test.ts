@@ -24,24 +24,24 @@ function setupFixtures() {
   fs.writeFileSync(path.join(vanillaDir, 'specs/001-login/plan.md'), '# Plan');
   fs.writeFileSync(path.join(vanillaDir, 'specs/001-login/tasks.md'), '- [ ] T001 Task 1\n- [x] T002 Task 2 [P]');
 
-  // 2. OAR B style
-  const oarbDir = path.join(FIXTURES_DIR, 'oarb-style-readiness');
-  fs.mkdirSync(path.join(oarbDir, 'specs/069-production-readiness-program'), { recursive: true });
-  fs.mkdirSync(path.join(oarbDir, 'specs/087-core'), { recursive: true });
-  fs.mkdirSync(path.join(oarbDir, 'specs/090-notification/contracts'), { recursive: true });
-  fs.mkdirSync(path.join(oarbDir, 'specs/090-notification/evidence'), { recursive: true });
+  // 2. Generic governance style
+  const governanceDir = path.join(FIXTURES_DIR, 'governance-style-readiness');
+  fs.mkdirSync(path.join(governanceDir, 'specs/069-production-readiness-program'), { recursive: true });
+  fs.mkdirSync(path.join(governanceDir, 'specs/087-core'), { recursive: true });
+  fs.mkdirSync(path.join(governanceDir, 'specs/090-notification/contracts'), { recursive: true });
+  fs.mkdirSync(path.join(governanceDir, 'specs/090-notification/evidence'), { recursive: true });
 
   fs.writeFileSync(
-    path.join(oarbDir, 'specs/069-production-readiness-program/delivery-ledger.md'),
+    path.join(governanceDir, 'specs/069-production-readiness-program/delivery-ledger.md'),
     '# Ledger\n## P0 Gate (CLOSED)\n- [x] 087-core\n## P1 Gate (OPEN)\n- [ ] 090-notification'
   );
   fs.writeFileSync(
-    path.join(oarbDir, 'specs/069-production-readiness-program/product-coverage-matrix.md'),
+    path.join(governanceDir, 'specs/069-production-readiness-program/product-coverage-matrix.md'),
     '| Capability | State | Responsible Child | Gate | client |\n|---|---|---|---|---|\n| Send notify | IN_PROGRESS | 090 | P1 | - |'
   );
-  fs.writeFileSync(path.join(oarbDir, 'specs/090-notification/contracts/openapi.yaml'), 'openapi: 3.0.0');
-  fs.writeFileSync(path.join(oarbDir, 'specs/090-notification/evidence/test-run.txt'), 'Tests passed');
-  fs.writeFileSync(path.join(oarbDir, 'specs/087-core/phase-exit.md'), '# Phase Exit 087\nReviewer: Admin\nApprover: Boss');
+  fs.writeFileSync(path.join(governanceDir, 'specs/090-notification/contracts/openapi.yaml'), 'openapi: 3.0.0');
+  fs.writeFileSync(path.join(governanceDir, 'specs/090-notification/evidence/test-run.txt'), 'Tests passed');
+  fs.writeFileSync(path.join(governanceDir, 'specs/087-core/phase-exit.md'), '# Phase Exit 087\nReviewer: Demo Reviewer\nApprover: Demo Approver');
 }
 
 describe('SpecKit Artifact Discovery & Paths', () => {
@@ -55,9 +55,9 @@ describe('SpecKit Artifact Discovery & Paths', () => {
     expect(cliResolved).toContain('vanilla-speckit-basic');
 
     // Env variable wins if no CLI param
-    process.env.SPECKIT_PROJECT_ROOT = path.join(FIXTURES_DIR, 'oarb-style-readiness');
+    process.env.SPECKIT_PROJECT_ROOT = path.join(FIXTURES_DIR, 'governance-style-readiness');
     const envResolved = resolveProjectRoot(undefined);
-    expect(envResolved).toContain('oarb-style-readiness');
+    expect(envResolved).toContain('governance-style-readiness');
     delete process.env.SPECKIT_PROJECT_ROOT;
   });
 
@@ -73,8 +73,8 @@ describe('SpecKit Artifact Discovery & Paths', () => {
     expect(roles).toContain('task-source');
   });
 
-  it('should discover OAR B governance files, contracts and evidence', async () => {
-    const root = path.join(FIXTURES_DIR, 'oarb-style-readiness');
+  it('should discover governance files, contracts and evidence', async () => {
+    const root = path.join(FIXTURES_DIR, 'governance-style-readiness');
     const artifacts = await discoverArtifacts({ projectRoot: root });
 
     const roles = artifacts.map(a => a.role);

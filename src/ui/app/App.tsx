@@ -386,8 +386,6 @@ export const App: React.FC = () => {
   };
 
   const riskCount = snapshot.validation.errors.length + snapshot.validation.warnings.length;
-  const isOarb = snapshot.project.detectedType === 'oarb-governance';
-
   return (
     <div className="app-shell">
       <aside className="sidebar">
@@ -438,11 +436,9 @@ export const App: React.FC = () => {
         <div className="sidebar-footer">
           <strong>Read-only</strong>
           Markdown is the source of truth. Snapshot is derived cache.
-          {isOarb && (
-            <div style={{ marginTop: 6, color: 'var(--warn)' }}>
-              Does not close gates or mark features verified.
-            </div>
-          )}
+          <div style={{ marginTop: 6, color: 'var(--warn)' }}>
+            Does not close gates or mark features verified.
+          </div>
         </div>
       </aside>
 

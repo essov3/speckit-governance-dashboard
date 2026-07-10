@@ -1,0 +1,3 @@
+- [x] T001 Define the profile update contract.
+- [x] T002 Implement validation using specs/001-user-profile/contracts/api-contract.md.
+- [x] T003 Record successful test evidence in specs/001-user-profile/evidence/test-report.md.
