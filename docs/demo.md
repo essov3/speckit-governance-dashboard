@@ -4,7 +4,7 @@ Run `npm run demo:generate` for the clean synthetic demo, point commands at `exa
 
 ## Use the npm package
 
-After `speckit-governance-dashboard@0.1.2` is published, use it against your own local SpecKit project. The npm package intentionally excludes these repository-only examples.
+Install `speckit-governance-dashboard` from npm and use it against your own local SpecKit project (see the [getting started guide](/getting-started)). The npm package intentionally excludes these repository-only examples.
 
 ```bash
 npx speckit-governance-dashboard doctor --project-root ../my-speckit-project

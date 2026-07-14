@@ -88,6 +88,18 @@ The commands above assume a cloned checkout, which includes the synthetic exampl
 
 ## CLI
 
+After a global install (or through `npx speckit-governance-dashboard <command>`), the CLI is available as `speckit-governance-dashboard` and the shorter alias `speckit-dashboard`. Both expose the same five commands:
+
+```bash
+speckit-dashboard doctor   --project-root <project>                  # structure and file-health report
+speckit-dashboard generate --project-root <project> --deterministic  # write the snapshot JSON cache
+speckit-dashboard check    --project-root <project> --deterministic  # validate and detect stale snapshots
+speckit-dashboard serve    --project-root <project>                  # dashboard UI with live updates
+speckit-dashboard watch    --project-root <project>                  # explicit live mode (alias of serve)
+```
+
+From a cloned repository the same commands run through npm scripts with the `dashboard:` prefix (note the `--` separating npm's arguments from the CLI's):
+
 ```bash
 npm run dashboard:doctor -- --project-root <project>
 npm run dashboard:generate -- --project-root <project> --deterministic
@@ -99,6 +111,8 @@ npm run dashboard:watch -- --project-root <project>
 `generate` writes `.dashboard-cache/<project>/project-status.json` in the dashboard working directory unless `--out` is supplied. `check` validates the live Markdown view and detects stale cache. Use `--adapter vanilla` or `--adapter governance` to select discovery behavior.
 
 `serve` watches `specs/**` and `.specify/**` by default. When a source file is added, changed, or removed, rapid editor events are batched, the derived snapshot is regenerated atomically, and the open dashboard receives the new data without a manual reload. `watch` is an explicit alias for this live mode. Use `serve --no-watch` for a fixed snapshot, or `--watch-debounce <milliseconds>` to tune batching.
+
+See the full command and option reference in the [getting started guide](docs/getting-started.md).
 
 ## Demos
 

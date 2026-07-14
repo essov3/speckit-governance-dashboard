@@ -11,11 +11,11 @@ hero:
     alt: Dashboard executive overview showing feature progress, validation health, readiness gates, and snapshot metadata
   actions:
     - theme: brand
+      text: Get started
+      link: /getting-started
+    - theme: alt
       text: View on GitHub
       link: https://github.com/essov3/speckit-governance-dashboard
-    - theme: alt
-      text: Get started
-      link: '#quick-start'
 
 features:
   - icon: 📄
@@ -140,7 +140,7 @@ speckit-dashboard watch --project-root ../my-speckit-project
 
 `--project-root` is the SpecKit project being analyzed — not the dashboard repository. The published npm package intentionally excludes repository examples.
 
-`watch` starts the local dashboard, monitors `specs/**` and `.specify/**`, regenerates the derived JSON after relevant changes, and updates the open view automatically. `serve` provides the same live behavior by default. Use `serve --no-watch` for a fixed snapshot or `--watch-debounce <milliseconds>` to change the default 250 ms batching window. [Read the live updates guide](/live-updates).
+`watch` starts the local dashboard, monitors `specs/**` and `.specify/**`, regenerates the derived JSON after relevant changes, and updates the open view automatically. `serve` provides the same live behavior by default. Use `serve --no-watch` for a fixed snapshot or `--watch-debounce <milliseconds>` to change the default 250 ms batching window. See the [getting started guide](/getting-started) for every command and option, and the [live updates guide](/live-updates) for how live refresh works.
 
 ### From a clone (For development/demos)
 

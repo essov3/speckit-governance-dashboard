@@ -1,10 +1,17 @@
 #!/usr/bin/env node
 
+import * as fs from 'fs';
+import * as path from 'path';
+import { fileURLToPath } from 'url';
 import { Command } from 'commander';
 import { runGenerate } from './commands/generate.ts';
 import { runCheck } from './commands/check.ts';
 import { runServe } from './commands/serve.ts';
 import { runDoctor } from './commands/doctor.ts';
+
+// Works from both src/cli/index.ts (tsx) and dist/cli/index.js (published bundle).
+const cliDir = path.dirname(fileURLToPath(import.meta.url));
+const packageJson = JSON.parse(fs.readFileSync(path.resolve(cliDir, '../../package.json'), 'utf8'));
 
 const program = new Command();
 const npmProjectRoot = process.env.npm_config_project_root;
@@ -17,7 +24,7 @@ const inferredProjectRoot = npmProjectRoot && npmProjectRoot !== 'true' ? npmPro
 program
   .name('speckit-governance-dashboard')
   .description('A read-only, Markdown-first visual dashboard for SpecKit projects.')
-  .version('0.1.2');
+  .version(packageJson.version);
 
 // 1. Generate Command
 program

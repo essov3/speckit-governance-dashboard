@@ -31,6 +31,7 @@ export default defineConfig({
   themeConfig: {
     logo: undefined,
     nav: [
+      { text: 'Get started', link: '/getting-started' },
       { text: 'Guide', link: '/architecture' },
       { text: 'Live updates', link: '/live-updates' },
       {
@@ -49,6 +50,7 @@ export default defineConfig({
       {
         text: 'Overview',
         items: [
+          { text: 'Getting started', link: '/getting-started' },
           { text: 'Architecture', link: '/architecture' },
           { text: 'Live updates', link: '/live-updates' },
           { text: 'Read-only model', link: '/read-only-model' },
