@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { ProjectStatusSnapshot } from '../../core/snapshot/snapshot-schema.ts';
 import { loadSnapshot } from '../data/load-snapshot.ts';
+import { loadWatchCapabilities, subscribeToSnapshotUpdates } from '../data/live-updates.ts';
 import { StatusBadge } from '../components/StatusBadge.tsx';
 import { SearchPalette, type SearchHit } from '../components/SearchPalette.tsx';
 import { NAV_GROUPS, NAV_TITLES, type NavId } from './nav.ts';
@@ -153,10 +154,11 @@ export const App: React.FC = () => {
 
   const [isWatching, setIsWatching] = useState(() => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('watch') === 'true';
+      return localStorage.getItem('watch') !== 'false';
     }
-    return false;
+    return true;
   });
+  const [watchAvailable, setWatchAvailable] = useState(false);
 
   const toggleWatch = () => {
     const nextWatch = !isWatching;
@@ -176,15 +178,28 @@ export const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    let interval: number | undefined;
-    if (isWatching) {
-      interval = window.setInterval(async () => {
-        const data = await loadSnapshot();
-        if (data) setSnapshot(data);
-      }, 3000);
-    }
+    let unsubscribe: (() => void) | undefined;
+    let cancelled = false;
+
+    const refreshSnapshot = async () => {
+      const data = await loadSnapshot();
+      if (!cancelled && data) setSnapshot(data);
+    };
+
+    const connect = async () => {
+      const capabilities = await loadWatchCapabilities();
+      if (cancelled) return;
+      setWatchAvailable(capabilities.enabled);
+
+      if (isWatching && capabilities.enabled && capabilities.transport === 'server-sent-events') {
+        unsubscribe = subscribeToSnapshotUpdates(refreshSnapshot, refreshSnapshot);
+      }
+    };
+
+    void connect();
     return () => {
-      if (interval) window.clearInterval(interval);
+      cancelled = true;
+      unsubscribe?.();
     };
   }, [isWatching]);
 
@@ -461,11 +476,12 @@ export const App: React.FC = () => {
               type="button"
               className="theme-toggle"
               onClick={toggleWatch}
-              aria-label={isWatching ? 'Stop auto-refresh' : 'Start auto-refresh'}
-              title={isWatching ? 'Stop auto-refresh' : 'Start auto-refresh'}
-              style={{ color: isWatching ? 'var(--pass)' : 'currentColor', borderColor: isWatching ? 'var(--pass-border)' : undefined }}
+              disabled={!watchAvailable}
+              aria-label={watchAvailable ? (isWatching ? 'Stop auto-refresh' : 'Start auto-refresh') : 'Auto-refresh unavailable'}
+              title={watchAvailable ? (isWatching ? 'Stop auto-refresh' : 'Start auto-refresh') : 'Run the dashboard with serve or watch to enable auto-refresh'}
+              style={{ color: isWatching && watchAvailable ? 'var(--pass)' : 'currentColor', borderColor: isWatching && watchAvailable ? 'var(--pass-border)' : undefined }}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={isWatching ? 'spin' : ''}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={isWatching && watchAvailable ? 'spin' : ''}>
                 <polyline points="23 4 23 10 17 10"></polyline>
                 <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
               </svg>

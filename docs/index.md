@@ -4,8 +4,8 @@ titleTemplate: false
 
 hero:
   name: SpecKit Governance Dashboard
-  text: See Spec Kit project health without touching the Markdown
-  tagline: A Markdown-first visual dashboard for repositories created with or compatible with GitHub Spec Kit. Scan artifacts, generate a deterministic derived snapshot, and understand readiness, gates, evidence, and risks — without changing the project.
+  text: See Spec Kit project health update as your Markdown changes
+  tagline: A Markdown-first visual dashboard for repositories created with or compatible with GitHub Spec Kit. Watch local artifacts, refresh the dashboard automatically, and understand readiness, gates, evidence, and risks — without changing the project.
   image:
     src: /screenshots/overview.png
     alt: Dashboard executive overview showing feature progress, validation health, readiness gates, and snapshot metadata
@@ -34,8 +34,11 @@ features:
     title: Validation with diagnostics
     details: Contracts, evidence links, phase exits, and lifecycle consistency produce clear errors and warnings — strict mode fails ambiguous parses.
   - icon: 🖥️
-    title: Local visual UI
-    details: Serve a read-only UI for overview, features, gates, evidence, decisions, coverage, risks, activity, and artifact inventory.
+    title: Live local UI
+    details: Watch SpecKit sources and refresh overview, features, gates, evidence, decisions, coverage, risks, activity, and artifact inventory without a manual reload.
+  - icon: ⚡
+    title: Efficient source watching
+    details: Relevant file events are batched before one atomic snapshot update. Generated output is ignored so the watcher cannot trigger itself.
 ---
 
 ## What you can see
@@ -102,6 +105,8 @@ A single local pipeline turns Markdown into a visual dashboard. Nothing is mutat
 
 `CLI → Discovery → Adapters → Normalization → Validators → Snapshot → UI`
 
+In live mode: `Source change → Debounced rebuild → Atomic snapshot → Browser event → Updated view`
+
 **What it scans**
 
 - `.specify/feature.json`, constitutions, and feature folders
@@ -124,16 +129,18 @@ Install the package to use the dashboard on your own SpecKit project, or clone t
 ### From npm (Recommended)
 
 ```sh
-npx speckit-governance-dashboard@0.1.2 doctor --project-root ../my-speckit-project
-npx speckit-governance-dashboard@0.1.2 generate --project-root ../my-speckit-project --deterministic
-npx speckit-governance-dashboard@0.1.2 serve --project-root ../my-speckit-project
+npx speckit-governance-dashboard doctor --project-root ../my-speckit-project
+npx speckit-governance-dashboard generate --project-root ../my-speckit-project --deterministic
+npx speckit-governance-dashboard watch --project-root ../my-speckit-project
 
 # or install globally
-npm install --global speckit-governance-dashboard@0.1.2
-speckit-dashboard serve --project-root ../my-speckit-project
+npm install --global speckit-governance-dashboard
+speckit-dashboard watch --project-root ../my-speckit-project
 ```
 
 `--project-root` is the SpecKit project being analyzed — not the dashboard repository. The published npm package intentionally excludes repository examples.
+
+`watch` starts the local dashboard, monitors `specs/**` and `.specify/**`, regenerates the derived JSON after relevant changes, and updates the open view automatically. `serve` provides the same live behavior by default. Use `serve --no-watch` for a fixed snapshot or `--watch-debounce <milliseconds>` to change the default 250 ms batching window. [Read the live updates guide](/live-updates).
 
 ### From a clone (For development/demos)
 
@@ -143,7 +150,7 @@ cd speckit-governance-dashboard
 npm install
 npm run build
 npm run dashboard:generate -- --project-root ./examples/vanilla-speckit-demo --deterministic
-npm run dashboard:serve -- --project-root ./examples/vanilla-speckit-demo
+npm run dashboard:watch -- --project-root ./examples/vanilla-speckit-demo
 ```
 
 ### Full governance demo

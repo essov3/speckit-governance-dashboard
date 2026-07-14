@@ -7,14 +7,16 @@ Run `npm run demo:generate` for the clean synthetic demo, point commands at `exa
 After `speckit-governance-dashboard@0.1.2` is published, use it against your own local SpecKit project. The npm package intentionally excludes these repository-only examples.
 
 ```bash
-npx speckit-governance-dashboard@0.1.2 doctor --project-root ../my-speckit-project
-npx speckit-governance-dashboard@0.1.2 generate --project-root ../my-speckit-project --deterministic
+npx speckit-governance-dashboard doctor --project-root ../my-speckit-project
+npx speckit-governance-dashboard generate --project-root ../my-speckit-project --deterministic
 
-npm install --global speckit-governance-dashboard@0.1.2
-speckit-dashboard serve --project-root ../my-speckit-project
+npm install --global speckit-governance-dashboard
+speckit-dashboard watch --project-root ../my-speckit-project
 ```
 
 `--project-root` identifies the project being read. The dashboard never modifies it.
+
+Both `serve` and `watch` refresh the generated snapshot and the open browser when SpecKit source files change. `serve --no-watch` keeps the initial snapshot fixed.
 
 ```bash
 npm run demo:full:generate

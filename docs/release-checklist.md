@@ -6,6 +6,9 @@ Before publishing the initial public release:
 - [ ] Create the GitHub repository and confirm its description and topics.
 - [ ] Verify `speckit-governance-dashboard` is available on npm.
 - [ ] Confirm the short `speckit-dashboard` CLI alias is available after installation.
+- [ ] Confirm `watch` and default `serve` mode regenerate after add/change/delete events under `specs/**` and `.specify/**`.
+- [ ] Confirm the browser receives a snapshot event and refreshes data without losing the active view.
+- [ ] Confirm custom snapshot output inside a watched directory does not create a refresh loop.
 - [ ] Run `npm run typecheck`, `npm test`, `npm run build`, and `npm run docs:build`.
 - [ ] Run the private-data scan and review all matches.
 - [ ] Run `npm pack --dry-run` and review every included file.

@@ -4,8 +4,13 @@ import * as path from 'path';
 import { fileURLToPath } from 'url';
 import { resolveProjectRoot, loadConfig } from '../../core/paths/resolve-project-root.ts';
 import { buildSnapshot } from '../../core/snapshot/build-snapshot.ts';
-import { writeSnapshot } from '../../core/snapshot/write-snapshot.ts';
+import { writeSnapshot, type WriteSnapshotResult } from '../../core/snapshot/write-snapshot.ts';
 import { startReadOnlyGuard, assertNoMutation } from '../../core/validate/read-only-protection.ts';
+import {
+  startProjectWatcher,
+  type ProjectFileChange,
+  type ProjectWatcher
+} from '../../core/watch/project-watcher.ts';
 
 export interface ServeCommandOptions {
   projectRoot?: string;
@@ -13,6 +18,8 @@ export interface ServeCommandOptions {
   host?: string;
   open?: boolean;
   deterministic?: boolean;
+  watch?: boolean;
+  watchDebounce?: string;
 }
 
 export async function runServe(options: ServeCommandOptions): Promise<void> {
@@ -27,15 +34,15 @@ export async function runServe(options: ServeCommandOptions): Promise<void> {
     process.exit(2);
   }
 
-  // 2. Start read-only guard
-  const guard = await startReadOnlyGuard(projectRoot);
-
-  // 3. Load config and generate snapshot
+  // 2. Load config and prepare snapshot generation
   const config = loadConfig();
-  
-  let snapshot;
-  try {
-    snapshot = await buildSnapshot({
+  const watchEnabled = options.watch !== false;
+  const parsedDebounce = Number.parseInt(options.watchDebounce || '250', 10);
+  const watchDebounce = Number.isFinite(parsedDebounce) ? Math.max(25, parsedDebounce) : 250;
+
+  const buildAndWriteSnapshot = async (): Promise<WriteSnapshotResult> => {
+    const guard = await startReadOnlyGuard(projectRoot);
+    const snapshot = await buildSnapshot({
       projectRoot,
       deterministic: !!options.deterministic,
       strict: config.strict || false,
@@ -43,30 +50,79 @@ export async function runServe(options: ServeCommandOptions): Promise<void> {
       includeUnknown: true,
       cliCommand: `serve ${process.argv.slice(3).join(' ')}`
     });
+    await assertNoMutation(guard, projectRoot);
+
+    return writeSnapshot(
+      snapshot,
+      projectRoot,
+      undefined, // Use default safe external location
+      config.output
+    );
+  };
+
+  // 3. Generate the initial snapshot
+  let writeResult: WriteSnapshotResult;
+  try {
+    writeResult = await buildAndWriteSnapshot();
   } catch (err: any) {
     console.error(`Error generating snapshot: ${err.message}`);
     process.exit(4);
+    return;
   }
-
-  // 4. Assert no mutation
-  try {
-    await assertNoMutation(guard, projectRoot);
-  } catch (err: any) {
-    console.error(`READ-ONLY PROTECTION FAILURE: ${err.message}`);
-    process.exit(1);
-  }
-
-  // 5. Write snapshot to temporary cache
-  const writeResult = writeSnapshot(
-    snapshot,
-    projectRoot,
-    undefined, // Use default safe external location
-    config.output
-  );
 
   console.log(`Snapshot generated at: ${writeResult.outputPath}`);
 
-  // 6. Start static file HTTP server
+  // 4. Prepare live-update clients and the project watcher
+  const eventClients = new Set<http.ServerResponse>();
+  const sendWatchEvent = (event: string, data: unknown) => {
+    const payload = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
+    for (const client of eventClients) {
+      if (client.destroyed || client.writableEnded) {
+        eventClients.delete(client);
+        continue;
+      }
+      client.write(payload);
+    }
+  };
+
+  let watcher: ProjectWatcher | undefined;
+  let refreshQueue = Promise.resolve();
+
+  if (watchEnabled) {
+    watcher = startProjectWatcher({
+      projectRoot,
+      debounceMs: watchDebounce,
+      ignoredPaths: [writeResult.outputPath],
+      onChange: (changes: ProjectFileChange[]) => {
+        refreshQueue = refreshQueue.then(async () => {
+          try {
+            await buildAndWriteSnapshot();
+            const changedPaths = changes.map((change) => change.path);
+            console.log(`Snapshot refreshed after ${changedPaths.length} source change${changedPaths.length === 1 ? '' : 's'}: ${changedPaths.join(', ')}`);
+            sendWatchEvent('snapshot', {
+              changedPaths,
+              refreshedAt: new Date().toISOString()
+            });
+          } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            console.error(`Snapshot refresh failed: ${message}`);
+            sendWatchEvent('refresh-error', { message });
+          }
+        });
+        return refreshQueue;
+      }
+    });
+
+    try {
+      await watcher.ready;
+    } catch (error) {
+      console.error(`Unable to watch project sources: ${error instanceof Error ? error.message : String(error)}`);
+      await watcher.close();
+      watcher = undefined;
+    }
+  }
+
+  // 5. Start static file HTTP server
   const port = parseInt(options.port || '5173', 10);
   const host = options.host || 'localhost';
 
@@ -148,6 +204,34 @@ export async function runServe(options: ServeCommandOptions): Promise<void> {
       res.end(JSON.stringify(body));
     };
 
+    // Server capabilities used by the UI to avoid polling static deployments.
+    if (reqPath === '/api/watch') {
+      sendJson(200, {
+        enabled: !!watcher,
+        transport: watcher ? 'server-sent-events' : 'none',
+        debounceMs: watcher ? watchDebounce : undefined
+      });
+      return;
+    }
+
+    // Live snapshot notifications. Snapshot data remains a separate no-cache request.
+    if (reqPath === '/api/events') {
+      if (!watcher) {
+        sendJson(404, { error: 'Project watch is not enabled' });
+        return;
+      }
+
+      res.writeHead(200, {
+        'Content-Type': 'text/event-stream; charset=utf-8',
+        'Cache-Control': 'no-cache, no-transform',
+        Connection: 'keep-alive'
+      });
+      res.write(`event: connected\ndata: ${JSON.stringify({ watching: true })}\n\n`);
+      eventClients.add(res);
+      req.on('close', () => eventClients.delete(res));
+      return;
+    }
+
     // Route for snapshot JSON
     if (reqPath === '/project-status.json' || reqPath === '/api/snapshot') {
       try {
@@ -200,7 +284,7 @@ export async function runServe(options: ServeCommandOptions): Promise<void> {
             featureNumber: a.featureNumber,
             sizeBytes: a.sizeBytes
           }));
-        sendJson(200, { files, projectRoot: snapshot.generated.projectRoot });
+        sendJson(200, { files, projectRoot: snapshotData.generated.projectRoot });
       } catch (err) {
         sendJson(500, { error: err instanceof Error ? err.message : String(err) });
       }
@@ -228,10 +312,19 @@ export async function runServe(options: ServeCommandOptions): Promise<void> {
     });
   });
 
+  server.on('close', () => {
+    for (const client of eventClients) client.end();
+    eventClients.clear();
+    void watcher?.close();
+  });
+
   server.listen(port, host, () => {
     const url = `http://${host}:${port}`;
     console.log(`\nSpecKit Governance Dashboard is running at: ${url}`);
     console.log('Markdown is the single source of truth. Dashboard is read-only.');
+    console.log(watcher
+      ? `Watching specs/** and .specify/** for changes (${watchDebounce} ms debounce).`
+      : 'Project source watching is disabled.');
     console.log('Press Ctrl+C to stop.');
 
     if (options.open) {

@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   title: 'SpecKit Governance Dashboard',
   description:
-    'A read-only, Markdown-first visual dashboard for GitHub Spec Kit repositories. Scan artifacts, generate a deterministic snapshot, and understand project health without changing the project.',
+    'A read-only, Markdown-first visual dashboard for GitHub Spec Kit repositories. Watch local artifacts, refresh project health automatically, and keep Markdown authoritative.',
   lang: 'en-US',
   cleanUrls: true,
   vite: {
@@ -20,7 +20,7 @@ export default defineConfig({
       'meta',
       {
         property: 'og:description',
-        content: 'Read-only visual dashboard for Spec Kit repositories. Markdown stays the source of truth.',
+        content: 'Live, read-only visual dashboard for Spec Kit repositories. Source changes refresh automatically while Markdown stays authoritative.',
       },
     ],
     ['meta', { property: 'og:type', content: 'website' }],
@@ -32,6 +32,7 @@ export default defineConfig({
     logo: undefined,
     nav: [
       { text: 'Guide', link: '/architecture' },
+      { text: 'Live updates', link: '/live-updates' },
       {
         text: 'Reference',
         items: [
@@ -49,6 +50,7 @@ export default defineConfig({
         text: 'Overview',
         items: [
           { text: 'Architecture', link: '/architecture' },
+          { text: 'Live updates', link: '/live-updates' },
           { text: 'Read-only model', link: '/read-only-model' },
         ],
       },
