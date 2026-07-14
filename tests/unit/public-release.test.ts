@@ -11,7 +11,9 @@ describe('public release hygiene', () => {
 
     expect(pkg.name).toBe('speckit-governance-dashboard');
     expect(pkg.license).toBe('MIT');
-    expect(pkg.bin['speckit-governance-dashboard']).toBe('./dist/cli/index.js');
+    // npm 11 publish validation strips bin paths with a ./ prefix
+    expect(pkg.bin['speckit-governance-dashboard']).toBe('dist/cli/index.js');
+    expect(pkg.bin['speckit-dashboard']).toBe('dist/cli/index.js');
     expect(readme).toContain('Markdown remains the source of truth.');
     expect(readme).toContain('Generated JSON is derived cache only.');
   });

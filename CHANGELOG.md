@@ -1,6 +1,11 @@
 # Changelog
 
-## 0.1.4 - Repaired npm package
+## 0.1.5 - Complete npm package
+
+- Ship the dashboard UI (`dist/ui`) that 0.1.4 lost to a build race at publish time: the 0.1.4 tarball contains the CLI but no UI, so `serve` and `watch` return 404 for the dashboard page
+- Verify `dist/cli` and `dist/ui` are complete after the `prepack` build and refuse to pack otherwise (`scripts/verify-dist.js`)
+
+## 0.1.4 - Repaired CLI packaging (missing the UI on npm, use 0.1.5)
 
 - Ship the compiled CLI (`dist/cli`) and prebuilt dashboard UI (`dist/ui`) in the npm package again. Version 0.1.3 was published without `dist/`, so neither the `speckit-governance-dashboard` nor the `speckit-dashboard` command could be installed from it.
 - Add a `prepack` script so `npm pack` and `npm publish` always build `dist/` first and can never ship an empty package again
