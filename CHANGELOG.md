@@ -6,6 +6,7 @@
 - Live-refresh the open dashboard through Server-Sent Events while preserving the current view
 - Add an explicit `watch` command, `dashboard:watch` script, `--no-watch`, and debounce configuration
 - Write refreshed snapshot JSON atomically so readers never observe partial data
+- Add a live updates guide and surface automatic refresh across the public VitePress site
 
 ## 0.1.2 - Vitepress Migration
 

@@ -2,7 +2,7 @@
 
 > A read-only, Markdown-first visual dashboard for SpecKit projects.
 
-**npm package:** `speckit-governance-dashboard@0.1.1`
+**npm package:** `speckit-governance-dashboard`
 
 **Project docs:** [skgd.itseslam.com](https://skgd.itseslam.com) · **Author:** [Eslam M. Mohamed](https://itseslam.com)
 
@@ -33,6 +33,7 @@ It is a local artifact discovery, validation, snapshot, and visualization tool. 
 - Read-only external-project scanning with pre/post mutation protection
 - Vanilla SpecKit artifact discovery plus optional governance artifacts
 - Deterministic JSON snapshots for repeatable CI checks
+- Live source watching with debounced regeneration and in-place browser refresh
 - Visual UI for overview, features, gates, evidence, decisions, coverage, diagnostics, and artifact inventory
 - Contract, checklist, evidence, phase-exit, ledger, and decision detection
 - Adapter-based parsing architecture with no default customer-specific rules
@@ -48,15 +49,15 @@ The fastest way to use the dashboard is directly via npm.
 Run it without a global installation:
 
 ```bash
-npx speckit-governance-dashboard@0.1.2 doctor --project-root ../my-speckit-project
-npx speckit-governance-dashboard@0.1.2 generate --project-root ../my-speckit-project --deterministic
-npx speckit-governance-dashboard@0.1.2 watch --project-root ../my-speckit-project
+npx speckit-governance-dashboard doctor --project-root ../my-speckit-project
+npx speckit-governance-dashboard generate --project-root ../my-speckit-project --deterministic
+npx speckit-governance-dashboard watch --project-root ../my-speckit-project
 ```
 
 Or install it globally for everyday use (both the full command and the shorter `speckit-dashboard` alias are available):
 
 ```bash
-npm install --global speckit-governance-dashboard@0.1.2
+npm install --global speckit-governance-dashboard
 speckit-dashboard doctor --project-root ../my-speckit-project
 speckit-governance-dashboard generate --project-root ../my-speckit-project --deterministic
 ```
@@ -74,7 +75,7 @@ npm install
 npm run build
 npm run dashboard:doctor -- --project-root ./examples/vanilla-speckit-demo
 npm run dashboard:generate -- --project-root ./examples/vanilla-speckit-demo --deterministic
-npm run dashboard:serve -- --project-root ./examples/vanilla-speckit-demo
+npm run dashboard:watch -- --project-root ./examples/vanilla-speckit-demo
 ```
 
 `--project-root` is the SpecKit project being analyzed, not the dashboard repository. For another local project:
@@ -111,7 +112,7 @@ Generated JSON is derived cache only; it is never used to change Markdown or lif
 
 ## Architecture and UI
 
-The pipeline is `CLI → discovery → adapters → normalization → validators → snapshot → UI`. There is no database or backend state store. The UI has executive overview, feature tracking, gate board, coverage, decisions, evidence health, risks, artifacts, and source-excerpt views.
+The pipeline is `CLI → discovery → adapters → normalization → validators → snapshot → UI`. In live mode, relevant source changes trigger a debounced rebuild, atomic JSON replacement, and browser update through Server-Sent Events. There is no database or backend state store. The UI has executive overview, feature tracking, gate board, coverage, decisions, evidence health, risks, artifacts, and source-excerpt views. See the [live updates guide](docs/live-updates.md).
 
 Validation distinguishes errors from warnings; strict mode makes ambiguous parsing fail. Read [architecture](docs/architecture.md), [validation rules](docs/validation-rules.md), and [adapter guidance](docs/adapters.md).
 
