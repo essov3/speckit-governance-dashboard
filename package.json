@@ -35,6 +35,7 @@
     "dashboard:generate": "tsx src/cli/index.ts generate",
     "dashboard:check": "tsx src/cli/index.ts check",
     "dashboard:serve": "tsx src/cli/index.ts serve",
+    "dashboard:watch": "tsx src/cli/index.ts watch",
     "dashboard:dev": "tsx src/cli/index.ts serve",
     "dashboard:doctor": "tsx src/cli/index.ts doctor",
     "demo:generate": "npm run dashboard:generate -- --project-root ./examples/vanilla-speckit-demo --deterministic --out .dashboard-cache/demo/project-status.json",
@@ -51,6 +52,7 @@
     "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
+    "chokidar": "^4.0.3",
     "commander": "^11.1.0",
     "fast-glob": "^3.3.2",
     "gray-matter": "^4.0.3",

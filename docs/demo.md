@@ -11,10 +11,12 @@ npx speckit-governance-dashboard@0.1.2 doctor --project-root ../my-speckit-proje
 npx speckit-governance-dashboard@0.1.2 generate --project-root ../my-speckit-project --deterministic
 
 npm install --global speckit-governance-dashboard@0.1.2
-speckit-dashboard serve --project-root ../my-speckit-project
+speckit-dashboard watch --project-root ../my-speckit-project
 ```
 
 `--project-root` identifies the project being read. The dashboard never modifies it.
+
+Both `serve` and `watch` refresh the generated snapshot and the open browser when SpecKit source files change. `serve --no-watch` keeps the initial snapshot fixed.
 
 ```bash
 npm run demo:full:generate

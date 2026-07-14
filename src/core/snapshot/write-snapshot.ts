@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'react'; // wait, node's path module
 import * as nodePath from 'path';
 import { toDeterministicJson } from './deterministic-json.ts';
 import { resolveOutputPath, ResolvedOutput } from '../paths/safe-output-path.ts';
@@ -31,9 +30,14 @@ export function writeSnapshot(
     fs.mkdirSync(dir, { recursive: true });
   }
 
-  // Write snapshot content
+  // Write atomically so the local server never serves a partially-written JSON file.
   const content = toDeterministicJson(snapshot);
-  fs.writeFileSync(resolved.outputPath, content, 'utf8');
+  const temporaryPath = nodePath.join(
+    dir,
+    `.${nodePath.basename(resolved.outputPath)}.${process.pid}.tmp`
+  );
+  fs.writeFileSync(temporaryPath, content, 'utf8');
+  fs.renameSync(temporaryPath, resolved.outputPath);
 
   return {
     outputPath: resolved.outputPath,

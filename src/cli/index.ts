@@ -61,12 +61,14 @@ program
 // 3. Serve Command
 program
   .command('serve')
-  .description('Start a local web server to display the dashboard UI.')
+  .description('Start the dashboard UI and refresh it when SpecKit sources change.')
   .option('-p, --project-root <path>', 'Path to target SpecKit project root')
   .option('--port <number>', 'Server port (default: 5173)', '5173')
   .option('--host <host>', 'Server host (default: localhost)', 'localhost')
   .option('--open', 'Auto-open dashboard in browser', false)
   .option('-d, --deterministic', 'Enforce deterministic snapshot timestamp', false)
+  .option('--no-watch', 'Disable automatic source watching and UI refresh')
+  .option('--watch-debounce <milliseconds>', 'Batch rapid source changes before regenerating', '250')
   .action(async (options) => {
     try {
       await runServe({ ...options, projectRoot: options.projectRoot ?? inferredProjectRoot, deterministic: options.deterministic || npmDeterministic });
@@ -76,7 +78,31 @@ program
     }
   });
 
-// 4. Doctor Command
+// 4. Watch Command (explicit alias for serve with live updates enabled)
+program
+  .command('watch')
+  .description('Watch SpecKit sources, regenerate the snapshot, and live-refresh the dashboard UI.')
+  .option('-p, --project-root <path>', 'Path to target SpecKit project root')
+  .option('--port <number>', 'Server port (default: 5173)', '5173')
+  .option('--host <host>', 'Server host (default: localhost)', 'localhost')
+  .option('--open', 'Auto-open dashboard in browser', false)
+  .option('-d, --deterministic', 'Enforce deterministic snapshot timestamp', false)
+  .option('--watch-debounce <milliseconds>', 'Batch rapid source changes before regenerating', '250')
+  .action(async (options) => {
+    try {
+      await runServe({
+        ...options,
+        watch: true,
+        projectRoot: options.projectRoot ?? inferredProjectRoot,
+        deterministic: options.deterministic || npmDeterministic
+      });
+    } catch (err: any) {
+      console.error(`CLI watch error: ${err.message}`);
+      process.exit(4);
+    }
+  });
+
+// 5. Doctor Command
 program
   .command('doctor')
   .description('Check target folder structure, file health, and report issues.')
