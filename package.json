@@ -1,6 +1,6 @@
 {
   "name": "speckit-governance-dashboard",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A read-only, Markdown-first visual dashboard for GitHub Spec Kit repositories.",
   "author": "Eslam M. Mohamed",
   "main": "dist/cli/index.js",
